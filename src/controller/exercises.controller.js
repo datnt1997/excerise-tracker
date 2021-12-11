@@ -3,24 +3,31 @@ const UsersDAO = require('../dao/usersDAO');
 class ExercisesController {
   static async createExercise(req, res) {
     try {
-      const descriptionFromBody = req.body.description;
-      const 
-      if (!usernameFromBody) {
-        return res.json({ error: 'invalid username' });
+      const idFromBody = req.param.id;
+      if (!idFromBody) {
+        return res.json({ error: 'invalid id' });
       }
-      const userData = await UsersDAO.getUserByUsername(usernameFromBody);
-      if (userData) {
-        return res.json({ username: userData.username, _id: userData._id, });
+      const userFromDB = await UsersDAO.getUserByID(idFromBody);
+      if(!userFromDB){
+        return res.json({ error: 'invalid id' });
       }
-      const insertResult = await UsersDAO.createUser(usernameFromBody);
-      if (!insertResult.success) {
-        return res.json({ error: insertResult.error });
+      const currentDate = new Date();
+      const exercise = {
+        description: req.body.description,
+        duration: req.body.duration,
+        date: req.body.date ||  currentDate.toDateString()
+      };
+      for (const property in exercise) {
+        if (!object[property] && property !== 'date') {
+          return res.json({ error: `invalid ${property}` });
+        }
       }
-      const userFromDB = await UsersDAO.getUserByUsername(usernameFromBody);
-      if (!userFromDB) {
-        return res.json({ error: 'internal error' });
+
+      const updateResult = await UsersDAO.createExercise(idFromBody, exercise);
+      if (!updateResult.success) {
+        return res.json({ error: updateResult.error });
       }
-      return res.json({ username: userFromDB.username, _id: userFromDB._id, });
+      return res.json({...userFromDB, ...exercise});
     } catch (e) {
       return res.json({ error: e })
     }

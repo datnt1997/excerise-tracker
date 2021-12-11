@@ -9,7 +9,7 @@ class UsersController {
       }
       const userData = await UsersDAO.getUserByUsername(usernameFromBody);
       if (userData) {
-        return res.json({ username: userData.username, _id: userData._id, });
+        return res.json({ ...userData });
       }
       const insertResult = await UsersDAO.createUser(usernameFromBody);
       if (!insertResult.success) {
@@ -19,7 +19,7 @@ class UsersController {
       if (!userFromDB) {
         return res.json({ error: 'internal error' });
       }
-      return res.json({ username: userFromDB.username, _id: userFromDB._id, });
+      return res.json({ ...userFromDB });
     } catch (e) {
       return res.json({ error: e })
     }

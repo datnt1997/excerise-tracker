@@ -14,8 +14,12 @@ class UsersDAO {
     }
   }
 
+  static async getUserByID(id) {
+    return await users.findOne({ _id: ObjectId(id) }).project({ _id: 1, username: 1 });;
+  }
+
   static async getUserByUsername(username) {
-    return await users.findOne({ username })
+    return await users.findOne({ username }).project({ _id: 1, username: 1 });
   }
 
   static async getUsers(condition = {}) {
@@ -40,13 +44,13 @@ class UsersDAO {
     }
   }
 
-  static async createExercise(id, exerciseArray) {
+  static async createExercise(id, exercise) {
     try {
       await users.updateOne(
         { _id: ObjectId(id) },
-        { 
+        {
           $inc: { count: 1 },
-          $set: {log: exerciseArray} 
+          $push: { log: { ...exercise } }
         }
       );
       return { success: true }
