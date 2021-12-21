@@ -3,7 +3,7 @@ const UsersDAO = require('../dao/usersDAO');
 class ExercisesController {
   static async createExercise(req, res) {
     try {
-      const idFromBody = req.param.id;
+      const idFromBody = req.params.id;
       if (!idFromBody) {
         return res.json({ error: 'invalid id' });
       }
@@ -18,7 +18,7 @@ class ExercisesController {
         date: req.body.date ||  currentDate.toDateString()
       };
       for (const property in exercise) {
-        if (!object[property] && property !== 'date') {
+        if (!exercise[property] && property !== 'date') {
           return res.json({ error: `invalid ${property}` });
         }
       }
@@ -33,3 +33,5 @@ class ExercisesController {
     }
   }
 }
+
+module.exports = ExercisesController;
