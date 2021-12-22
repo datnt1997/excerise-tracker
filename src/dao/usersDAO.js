@@ -36,39 +36,12 @@ class UsersDAO {
 
   static async createUser(username) {
     try {
-      await users.insertOne({ username, count: 0, log: [] })
+      await users.insertOne({ username })
       return { success: true }
     } catch (e) {
       console.error(`Error occurred while adding new user, ${e}.`)
       return { error: e }
     }
-  }
-
-  static async createExercise(id, exercise) {
-    try {
-      await users.updateOne(
-        { _id: ObjectId(id) },
-        {
-          $inc: { count: 1 },
-          $push: { log: { ...exercise } }
-        }
-      );
-      return { success: true }
-    } catch (e) {
-      console.error(`Error occurred while adding new exercise, ${e}.`)
-      return { error: e }
-    }
-  }
-
-  static async getLogs(condition = {}) {
-    let cursor;
-    try {
-      cursor = await users
-        .find({ ...condition });
-    } catch (e) {
-      return [];
-    }
-    return cursor.toArray();
   }
 }
 
