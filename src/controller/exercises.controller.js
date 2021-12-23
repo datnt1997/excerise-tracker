@@ -32,7 +32,42 @@ class ExercisesController {
       const dateFromExercise = new Date(exercise.date);
       return res.json(Object.assign({ ...userFromDB, ...exercise }, { date: dateFromExercise.toDateString() }));
     } catch (e) {
-      return res.json({ error: e })
+      return res.json({ error: e });
+    }
+  }
+
+  static async getLogs(req, res) {
+    try {
+      const idFromBody = req.params.id;
+      if (!idFromBody) {
+        return res.json({ error: 'invalid id' });
+      }
+      const userFromDB = await UsersDAO.getUserByID(idFromBody);
+      if (!userFromDB) {
+        return res.json({ error: 'invalid id' });
+      }
+      const { from = '', to = '', limit = 0 } = req.query;
+      let query = {
+        user_id: idFromBody,
+      };
+      if (!!from && !!to) {
+        query = Object.assign({ ...query }, {
+          date: {
+            $gte: from,
+            $lte: to
+          }
+        });
+      }
+      if (!!!from) {
+        query = Object.assign({ ...query }, { date: { $lte: to } });
+      }
+      if (!!!to) {
+        query = Object.assign({ ...query }, { date: { $gte: from } });
+      }
+      const logs = await ExercisesDAO.getExercises({ ...query }, limit);
+      return res.json({ ...userFromDB, count: logs.length, logs });
+    } catch (e) {
+      return res.json({ error: e });
     }
   }
 }

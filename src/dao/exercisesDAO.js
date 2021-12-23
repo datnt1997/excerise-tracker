@@ -16,7 +16,7 @@ class ExercisesDAO {
 
   static async createExercise(id, exercise) {
     try {
-      await exercises.insertOne({user_id: id, ...exercise});
+      await exercises.insertOne({ user_id: id, ...exercise });
       return { success: true }
     } catch (e) {
       console.error(`Error occurred while adding new exercise, ${e}.`)
@@ -29,7 +29,7 @@ class ExercisesDAO {
     try {
       cursor = await exercises
         .find({ ...condition })
-        .limit(limit);
+        .limit(Number(limit));
     } catch (e) {
       return [];
     }
