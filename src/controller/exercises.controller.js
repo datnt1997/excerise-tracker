@@ -30,7 +30,7 @@ class ExercisesController {
         return res.json({ error: updateResult.error });
       }
       const dateFromExercise = new Date(exercise.date);
-      return res.json(Object.assign({ ...userFromDB, ...exercise }, { date: dateFromExercise.toDateString() }));
+      return res.json(Object.assign({ ...userFromDB, ...exercise }, { duration: Number(exercise.duration), date: dateFromExercise.toDateString() }));
     } catch (e) {
       return res.json({ error: e });
     }
@@ -65,7 +65,8 @@ class ExercisesController {
         query = Object.assign({ ...query }, { date: { $gte: from } });
       }
       const logs = await ExercisesDAO.getExercises({ ...query }, limit);
-      return res.json({ ...userFromDB, count: logs.length, logs });
+      const newLogs = logs.map(item => Object.assign({ ...item }, { duration: Number(item.duration), date: new Date(item.date).toDateString() }))
+      return res.json({ ...userFromDB, count: logs.length, log: newLogs });
     } catch (e) {
       return res.json({ error: e });
     }
