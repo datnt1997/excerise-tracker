@@ -16,7 +16,7 @@ class ExercisesController {
       const currentDateInString = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
       const exercise = {
         description: req.body.description,
-        duration: req.body.duration,
+        duration: Number(req.body.duration),
         date: req.body.date || currentDateInString
       };
       for (const property in exercise) {
@@ -30,7 +30,7 @@ class ExercisesController {
         return res.json({ error: updateResult.error });
       }
       const dateFromExercise = new Date(exercise.date);
-      return res.json(Object.assign({ ...userFromDB, ...exercise }, { duration: Number(exercise.duration), date: dateFromExercise.toDateString() }));
+      return res.json(Object.assign({ ...userFromDB, ...exercise }, { date: dateFromExercise.toDateString() }));
     } catch (e) {
       return res.json({ error: e });
     }
@@ -65,7 +65,7 @@ class ExercisesController {
         query = Object.assign({ ...query }, { date: { $gte: from } });
       }
       const logs = await ExercisesDAO.getExercises({ ...query }, limit);
-      const newLogs = logs.map(item => Object.assign({ ...item }, { duration: Number(item.duration), date: new Date(item.date).toDateString() }))
+      const newLogs = logs.map(item => Object.assign({ ...item }, { date: new Date(item.date).toDateString() }))
       return res.json({ ...userFromDB, count: logs.length, log: newLogs });
     } catch (e) {
       return res.json({ error: e });
